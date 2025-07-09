@@ -1,5 +1,10 @@
 package com.thechance.caffeine.ui.screen.size
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -22,10 +27,12 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -38,7 +45,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.thechance.caffeine.R
+import com.thechance.caffeine.model.CoffeeSize
 import com.thechance.caffeine.model.CoffeeType
+import com.thechance.caffeine.ui.components.AppButton
+import com.thechance.caffeine.ui.components.dropShadow
 import com.thechance.caffeine.ui.design_system.text_style.Urbanist
 import com.thechance.caffeine.ui.design_system.theme.CaffeineTheme
 import com.thechance.caffeine.ui.design_system.theme.Theme
@@ -59,6 +69,7 @@ fun CoffeeSizeRoot(
         uiState = uiState,
         coffeeType = args.coffeeType,
         navigateToAlmostDoneScreen = navigateToAlmostDoneScreen,
+        interactionHandler = viewModel,
         goBack = goBack
     )
 }
@@ -68,8 +79,18 @@ fun CoffeeSizeScreen(
     uiState: CoffeeSizeState,
     coffeeType: CoffeeType,
     navigateToAlmostDoneScreen: () -> Unit,
+    interactionHandler: CoffeeSizeInteractionHandler,
     goBack: () -> Unit
 ) {
+    val coffeeSizeScale by animateFloatAsState(
+        targetValue = when (uiState.selectedCoffeeSize) {
+            CoffeeSize.SMALL -> 0.9f
+            CoffeeSize.MEDIUM -> 1f
+            CoffeeSize.LARGE -> 1.1f
+        },
+        animationSpec = tween(500)
+    )
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -150,6 +171,10 @@ fun CoffeeSizeScreen(
                     contentDescription = null,
                     modifier = Modifier
                         .fillMaxSize()
+                        .graphicsLayer {
+                            scaleX = coffeeSizeScale
+                            scaleY = coffeeSizeScale
+                        }
                 )
 
                 Image(
@@ -158,6 +183,10 @@ fun CoffeeSizeScreen(
                     modifier = Modifier
                         .size(66.dp)
                         .offset(y = 88.dp)
+                        .graphicsLayer {
+                            scaleX = coffeeSizeScale
+                            scaleY = coffeeSizeScale
+                        }
                 )
             }
         }
@@ -165,7 +194,7 @@ fun CoffeeSizeScreen(
         Row(
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
-                .padding(bottom = 24.dp)
+                .padding(bottom = 92.dp)
                 .clip(CircleShape)
                 .background(Color(0xFFF5F5F5))
                 .padding(8.dp),
@@ -176,9 +205,37 @@ fun CoffeeSizeScreen(
                 Box(
                     modifier = Modifier
                         .clip(CircleShape)
-                        .size(40.dp),
+                        .size(40.dp)
+                        .clickable {
+                            interactionHandler.onCoffeeSizeClick(coffeeSize)
+                        },
                     contentAlignment = Alignment.Center
                 ) {
+                    this@Row.AnimatedVisibility(
+                        visible = uiState.selectedCoffeeSize == coffeeSize,
+                        enter = fadeIn(
+                            animationSpec = tween(500)
+                        ),
+                        exit = fadeOut(
+                            animationSpec = tween(500)
+                        )
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .clip(CircleShape)
+                                .size(40.dp)
+                                .dropShadow(
+                                    color = Color(0xFFB94B23).copy(alpha = 0.5f),
+                                    offsetX = 0.dp,
+                                    offsetY = 6.dp,
+                                    blur = 16.dp,
+                                    spread = 0.dp,
+                                    shape = CircleShape
+                                )
+                                .background(Theme.color.brown)
+                        )
+                    }
+
                     Text(
                         text = coffeeSize.getLetter(),
                         style = TextStyle(
@@ -198,6 +255,14 @@ fun CoffeeSizeScreen(
                 }
             }
         }
+
+        AppButton(
+            text = stringResource(R.string.contin),
+            icon = R.drawable.ic_vector_right,
+            onClick = navigateToAlmostDoneScreen,
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+        )
     }
 }
 
@@ -209,6 +274,12 @@ private fun PreviewCoffeeSizeScreen() {
             uiState = CoffeeSizeState(),
             coffeeType = CoffeeType.MACCHIATO,
             navigateToAlmostDoneScreen = {},
+            interactionHandler = object : CoffeeSizeInteractionHandler {
+                override fun onCoffeeSizeClick(coffeeSize: CoffeeSize) {
+                    TODO()
+                }
+
+            },
             goBack = {}
         )
     }
