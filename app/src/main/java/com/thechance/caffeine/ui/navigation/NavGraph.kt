@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.thechance.caffeine.ui.screen.intro.IntroScreen
+import com.thechance.caffeine.ui.screen.size.CoffeeSizeRoot
 import com.thechance.caffeine.ui.screen.type.CoffeeTypeRoot
 
 @Composable
@@ -37,7 +38,15 @@ fun NavGraph(
 
         composable<CoffeeSizeRoute> {
             val args = it.toRoute<CoffeeSizeRoute>()
-            // TODO
+            CoffeeSizeRoot(
+                args = args,
+                navigateToAlmostDoneScreen = {
+
+                },
+                goBack = {
+                    navController.popBackStack()
+                }
+            )
         }
 
     }
