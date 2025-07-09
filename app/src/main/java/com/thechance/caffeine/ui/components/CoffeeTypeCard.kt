@@ -9,15 +9,22 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.lerp
 import com.thechance.caffeine.R
+import com.thechance.caffeine.ui.design_system.text_style.Urbanist
 import com.thechance.caffeine.ui.design_system.theme.CaffeineTheme
 import kotlin.math.absoluteValue
 
@@ -44,6 +51,7 @@ fun CoffeeTypeCard(
     ) {
         Box(
             modifier = Modifier
+                .padding(bottom = 16.dp)
                 .height(244.dp)
                 .width(199.dp)
                 .graphicsLayer {
@@ -66,6 +74,19 @@ fun CoffeeTypeCard(
                 contentDescription = null
             )
         }
+
+        Text(
+            text = title,
+            color = Color(0xFF1F1F1F),
+            style = TextStyle(
+                fontFamily = Urbanist,
+                fontWeight = FontWeight.Bold,
+                fontSize = 32.sp,
+                lineHeight = 32.sp,
+                letterSpacing = 0.25.sp,
+                textAlign = TextAlign.Center
+            )
+        )
     }
 }
 
